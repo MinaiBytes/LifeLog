@@ -1,0 +1,52 @@
+name: Create entry
+
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: Date in YYYY-MM-DD. Leave blank to use today's date in Japan time.
+        required: false
+        type: string
+      title:
+        description: Entry title
+        required: true
+        type: string
+      body:
+        description: Entry body
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Create Markdown entry
+        run: node scripts/create-entry.mjs
+        env:
+          ENTRY_DATE: ${{ inputs.date }}
+          ENTRY_TITLE: ${{ inputs.title }}
+          ENTRY_BODY: ${{ inputs.body }}
+
+      - name: Check entries
+        run: npm run check
+
+      - name: Commit entry
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add entries
+          git commit -m "entry: add ${{ inputs.date || 'today' }}"
+          git push

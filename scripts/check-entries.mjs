@@ -25,6 +25,17 @@ async function collectMarkdownFiles(dir) {
   return files;
 }
 
+function parseFrontMatterValue(value) {
+  const trimmed = value.trim();
+  const quote = trimmed[0];
+
+  if ((quote === '"' || quote === "'") && trimmed.endsWith(quote)) {
+    return trimmed.slice(1, -1).replaceAll(`\\${quote}`, quote);
+  }
+
+  return trimmed;
+}
+
 function parseFrontMatter(source, filePath) {
   const match = source.match(/^---\n([\s\S]*?)\n---\n?/);
   if (!match) {
@@ -41,7 +52,7 @@ function parseFrontMatter(source, filePath) {
           throw new Error(`${filePath} has invalid front matter line: ${line}`);
         }
 
-        return [line.slice(0, separator).trim(), line.slice(separator + 1).trim()];
+        return [line.slice(0, separator).trim(), parseFrontMatterValue(line.slice(separator + 1))];
       }),
   );
 }

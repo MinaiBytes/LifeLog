@@ -7,6 +7,7 @@
   --line: #e5ded4;
   --accent: #6b4f2a;
   --accent-soft: #efe4d1;
+  --shadow: 0 18px 45px rgb(77 60 38 / 0.08);
   font-family: ui-serif, "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", Georgia, serif;
 }
 
@@ -19,6 +20,7 @@
     --line: #37322d;
     --accent: #d8b982;
     --accent-soft: #33291b;
+    --shadow: 0 18px 45px rgb(0 0 0 / 0.18);
   }
 }
 
@@ -28,7 +30,9 @@
 
 body {
   margin: 0;
-  background: var(--background);
+  background:
+    radial-gradient(circle at top left, var(--accent-soft), transparent 30rem),
+    var(--background);
   color: var(--text);
   font-size: 17px;
   line-height: 1.85;
@@ -75,10 +79,11 @@ a {
 
 .hero {
   margin: 40px 0;
-  padding: 24px;
+  padding: clamp(22px, 5vw, 32px);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 22px;
+  box-shadow: var(--shadow);
 }
 
 .hero p,
@@ -106,24 +111,61 @@ a {
   padding: 0;
 }
 
-.entry-list li,
 .archive-list li,
 .month-list li {
   padding: 16px 0;
   border-bottom: 1px solid var(--line);
 }
 
+.entry-list {
+  display: grid;
+  gap: 14px;
+}
+
+.entry-list li {
+  margin: 0;
+}
+
 .entry-link {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 18px;
+  min-height: 100%;
+  padding: 18px 20px;
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 18px;
   text-decoration: none;
+  transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+}
+
+.entry-link:hover {
+  border-color: var(--accent);
+  background: var(--surface);
+  transform: translateY(-1px);
+}
+
+.entry-link-main {
+  display: grid;
+  gap: 6px;
 }
 
 .entry-link strong {
-  font-size: 1.05rem;
+  font-size: 1.12rem;
   font-weight: 600;
+  line-height: 1.5;
+}
+
+.entry-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  margin: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 0.96rem;
+  line-height: 1.75;
 }
 
 time,
@@ -139,6 +181,7 @@ time,
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 20px;
+  box-shadow: var(--shadow);
 }
 
 .entry-title {
@@ -183,6 +226,11 @@ time,
   .site-header,
   .entry-link {
     display: block;
+  }
+
+  .entry-link time {
+    display: block;
+    margin-top: 10px;
   }
 
   .site-nav {

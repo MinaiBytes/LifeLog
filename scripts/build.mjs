@@ -39,6 +39,17 @@ function formatDate(date) {
   }).format(new Date(`${date}T00:00:00Z`));
 }
 
+function parseFrontMatterValue(value) {
+  const trimmed = value.trim();
+  const quote = trimmed[0];
+
+  if ((quote === '"' || quote === "'") && trimmed.endsWith(quote)) {
+    return trimmed.slice(1, -1).replaceAll(`\\${quote}`, quote);
+  }
+
+  return trimmed;
+}
+
 function parseEntry(source, filePath) {
   const match = source.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
 
@@ -56,7 +67,7 @@ function parseEntry(source, filePath) {
           throw new Error(`${filePath} has invalid front matter line: ${line}`);
         }
 
-        return [line.slice(0, separator).trim(), line.slice(separator + 1).trim()];
+        return [line.slice(0, separator).trim(), parseFrontMatterValue(line.slice(separator + 1))];
       }),
   );
 
@@ -100,6 +111,31 @@ async function collectMarkdownFiles(dir) {
   }
 
   return files;
+}
+
+function plainText(markdown) {
+  return markdown
+    .replace(/^---[\s\S]*?---/g, '')
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^[-*+]\s+/gm, '')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/[>*_~]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function excerpt(markdown, maxLength = 120) {
+  const text = plainText(markdown);
+
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  return `${text.slice(0, maxLength).trimEnd()}…`;
 }
 
 function renderInlineMarkdown(value) {
@@ -177,16 +213,26 @@ ${body}
 </html>`;
 }
 
-function entryList(entries) {
+function entryList(entries, { showExcerpt = false } = {}) {
   if (entries.length === 0) {
     return '<p>まだ記録がありません。</p>';
   }
 
-  return `<ul class="entry-list">
+  return `<ul class="entry-list${showExcerpt ? ' entry-list-with-excerpts' : ''}">
 ${entries
-  .map(
-    (entry) => `  <li><a class="entry-link" href="${href(entry.urlPath)}"><strong>${escapeHtml(entry.title)}</strong><time datetime="${entry.date}">${formatDate(entry.date)}</time></a></li>`,
-  )
+  .map((entry) => {
+    const preview = showExcerpt ? `
+      <p class="entry-excerpt">${escapeHtml(excerpt(entry.body))}</p>` : '';
+
+    return `  <li>
+    <a class="entry-link" href="${href(entry.urlPath)}">
+      <span class="entry-link-main">
+        <strong>${escapeHtml(entry.title)}</strong>${preview}
+      </span>
+      <time datetime="${entry.date}">${formatDate(entry.date)}</time>
+    </a>
+  </li>`;
+  })
   .join('\n')}
 </ul>`;
 }
@@ -224,7 +270,7 @@ async function build() {
         <p>思ったことを、短く書き残していきます。</p>
       </section>
       <h2 class="section-title">最新の記録</h2>
-${entryList(entries.slice(0, 30))}`,
+${entryList(entries.slice(0, 30), { showExcerpt: true })}`,
     }),
   );
 
@@ -267,7 +313,7 @@ ${months
           title: `${year}年${Number(month)}月`,
           currentPath: `/archives/${year}/${month}/`,
           body: `      <h2 class="section-title">${year}年${Number(month)}月</h2>
-${entryList(monthEntries)}
+${entryList(monthEntries, { showExcerpt: true })}
       <p><a class="back-link" href="${href(`/archives/${year}/`)}">${year}年へ戻る</a></p>`,
         }),
       );
