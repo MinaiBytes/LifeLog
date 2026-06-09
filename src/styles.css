@@ -1,0 +1,247 @@
+:root {
+  color-scheme: light dark;
+  --background: #faf8f3;
+  --surface: #fffdf8;
+  --text: #23201d;
+  --muted: #746c62;
+  --line: #e5ded4;
+  --accent: #6b4f2a;
+  --accent-soft: #efe4d1;
+  --shadow: 0 18px 45px rgb(77 60 38 / 0.08);
+  font-family: ui-serif, "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", Georgia, serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #151413;
+    --surface: #1e1c1a;
+    --text: #f1ebe2;
+    --muted: #b8ada0;
+    --line: #37322d;
+    --accent: #d8b982;
+    --accent-soft: #33291b;
+    --shadow: 0 18px 45px rgb(0 0 0 / 0.18);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, var(--accent-soft), transparent 30rem),
+    var(--background);
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1.85;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+}
+
+.site {
+  width: min(100% - 32px, 760px);
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+
+.site-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.site-title {
+  margin: 0;
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
+  letter-spacing: 0.04em;
+}
+
+.site-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-nav {
+  display: flex;
+  gap: 12px;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.hero {
+  margin: 40px 0;
+  padding: clamp(22px, 5vw, 32px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+}
+
+.hero p,
+.entry-body p {
+  margin: 0 0 1.2em;
+}
+
+.hero p:last-child,
+.entry-body p:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  margin: 32px 0 16px;
+  font-size: 1.1rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.entry-list,
+.archive-list,
+.month-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.archive-list li,
+.month-list li {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.entry-list {
+  display: grid;
+  gap: 14px;
+}
+
+.entry-list li {
+  margin: 0;
+}
+
+.entry-link {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 18px;
+  min-height: 100%;
+  padding: 18px 20px;
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  text-decoration: none;
+  transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+}
+
+.entry-link:hover {
+  border-color: var(--accent);
+  background: var(--surface);
+  transform: translateY(-1px);
+}
+
+.entry-link-main {
+  display: grid;
+  gap: 6px;
+}
+
+.entry-link strong {
+  font-size: 1.12rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.entry-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  margin: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 0.96rem;
+  line-height: 1.75;
+}
+
+time,
+.count,
+.entry-date {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.entry-card {
+  margin-top: 40px;
+  padding: clamp(24px, 5vw, 40px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+}
+
+.entry-title {
+  margin: 8px 0 24px;
+  font-size: clamp(1.8rem, 7vw, 2.8rem);
+  line-height: 1.35;
+}
+
+.entry-body {
+  font-size: clamp(1.05rem, 3vw, 1.2rem);
+}
+
+.pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.pager a,
+.back-link {
+  display: block;
+  padding: 12px 14px;
+  background: var(--accent-soft);
+  border-radius: 12px;
+  text-decoration: none;
+}
+
+.pager a:last-child {
+  text-align: right;
+}
+
+.site-footer {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 560px) {
+  .site-header,
+  .entry-link {
+    display: block;
+  }
+
+  .entry-link time {
+    display: block;
+    margin-top: 10px;
+  }
+
+  .site-nav {
+    margin-top: 8px;
+  }
+
+  .pager {
+    grid-template-columns: 1fr;
+  }
+
+  .pager a:last-child {
+    text-align: left;
+  }
+}
